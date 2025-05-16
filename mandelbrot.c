@@ -116,10 +116,10 @@ int main(void) {
 	unsigned int pixels[WINDOW_HEIGHT][WINDOW_WIDTH] = {0};
 	double real_min = REAL_MIN;
 	double real_max = REAL_MAX;
-	double real_diff = REAL_MAX - REAL_MIN;
+	//double real_diff = REAL_MAX - REAL_MIN;
 	double imag_min = IMAG_MIN;
 	double imag_max = IMAG_MAX;
-	double imag_diff = IMAG_MAX - IMAG_MIN;
+	//double imag_diff = IMAG_MAX - IMAG_MIN;
 	int zoom_factor = 2;
 	int rand_r = rand() % 256;
 	int rand_g = rand() % 256;
@@ -167,14 +167,12 @@ int main(void) {
 					break;
 				case SDL_MOUSEBUTTONDOWN:
 					{
-						//double real_scaled = 1.0;
-						//double imag_scaled = 1.0;
 						double real_scaled = scale_coord(real_min, real_max, event.button.x, WINDOW_WIDTH);
 						double imag_scaled = scale_coord(imag_min, imag_max, event.button.y, WINDOW_HEIGHT);
-						real_diff = real_max - real_min;
+						double real_diff = real_max - real_min;
 						real_min = real_scaled - (real_diff / (2.0 * zoom_factor));
 						real_max = real_scaled + (real_diff / (2.0 * zoom_factor));
-						imag_diff = imag_max - imag_min;
+						double imag_diff = imag_max - imag_min;
 						imag_min = imag_scaled - (imag_diff / (2.0 * zoom_factor));
 						imag_max = imag_scaled + (imag_diff / (2.0 * zoom_factor));
 						render_mandelbrot(&app, real_min, real_max, imag_min, imag_max, rand_r, rand_g, rand_b, pixels);
