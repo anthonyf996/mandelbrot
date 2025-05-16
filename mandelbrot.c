@@ -57,11 +57,11 @@ void draw_point(struct App *app, int x, int y, Uint8 r, Uint8 g, Uint8 b) {
 		SDL_SetRenderDrawColor(app->renderer, DEFAULT_R, DEFAULT_G, DEFAULT_B, 255);
 }
 
-double linear_transform(double min, double max, double value, double limit) {
-	return min + (max - min) * value / limit;
+double scale_coord(double target_scale_min, double target_scale_max, double coord_to_scale, double coord_scale_max) {
+	return target_scale_min + (target_scale_max - target_scale_min) * coord_to_scale / coord_scale_max;
 }
 
-unsigned int is_in_set(double x, double y) {
+unsigned int is_in_mandelbrot_set(double x, double y) {
 	const unsigned int MAX_ITERATIONS = 700;
 	double complex c = x + y * I;
 	double complex z = 0;
@@ -82,9 +82,9 @@ void render_mandelbrot(struct App *app, double real_min, double real_max, double
 		for (unsigned int y = 0; y < WINDOW_HEIGHT; y++) {
 			//double x_scaled = real_min + (real_max - real_min) * x / (float)WINDOW_WIDTH;
 			//double y_scaled = imag_min + (imag_max - imag_min) * y / (float)WINDOW_HEIGHT;
-			double x_scaled = linear_transform(real_min, real_max, x, WINDOW_WIDTH);
-			double y_scaled = linear_transform(imag_min, imag_max, y, WINDOW_HEIGHT);
-			unsigned int result = is_in_set(x_scaled, y_scaled);
+			double x_scaled = scale_coord(real_min, real_max, x, WINDOW_WIDTH);
+			double y_scaled = scale_coord(imag_min, imag_max, y, WINDOW_HEIGHT);
+			unsigned int result = is_in_mandelbrot_set(x_scaled, y_scaled);
 			pixels[y * WINDOW_WIDTH + x] = result;
 			//draw_point(app, x, y, result * scale + rand_r % 256, result * scale + rand_g % 256, result * scale + rand_b % 256);
 			//draw_point(app, x, y, result * rand_r % 256, result * rand_g % 256, result * rand_b % 256);
@@ -125,8 +125,8 @@ int main(void) {
 	double imag_min = IMAG_MIN;
 	double imag_max = IMAG_MAX;
 	double imag_diff = IMAG_MAX - IMAG_MIN;
-	double real_scale = 1.0;
-	double imag_scale = 1.0;
+	double real_scaled = 1.0;
+	double imag_scaled = 1.0;
 	int zoom_factor = 2;
 	int zoom_count = 2;
 	int rand_r = rand() % 256;
@@ -162,14 +162,13 @@ int main(void) {
 							real_max = REAL_MAX;
 							imag_min = IMAG_MIN;
 							imag_max = IMAG_MAX;
-							real_scale = 1.0;
-							imag_scale = 1.0;
+							real_scaled = 1.0;
+							imag_scaled = 1.0;
 							break;
 						case SDL_SCANCODE_C:
 							rand_r = rand() % 256;
 							rand_g = rand() % 256;
 							rand_b = rand() % 256;
-							//render_mandelbrot(&app, real_min, real_max, imag_min, imag_max, rand_r, rand_g, rand_b, &pixels);
 							draw_mandelbrot(&app, rand_r, rand_g, rand_b, &pixels);
 							break;
 						default:
@@ -177,35 +176,20 @@ int main(void) {
 					}
 					break;
 				case SDL_MOUSEBUTTONDOWN:
-					/*
-					for (int i = 0; i < zoom_count; i++) {
-						real_scale = linear_transform(real_min, real_max, event.button.x, WINDOW_WIDTH);
-						imag_scale = linear_transform(imag_min, imag_max, event.button.y, WINDOW_HEIGHT);
-						real_min = (real_min + real_scale) / zoom_factor;
-						real_max = (real_max + real_scale) / zoom_factor;
-						imag_min = (imag_min + imag_scale) / zoom_factor;
-						imag_max = (imag_max + imag_scale) / zoom_factor;
-					}
-					*/
-						real_scale = linear_transform(real_min, real_max, event.button.x, WINDOW_WIDTH);
-						imag_scale = linear_transform(imag_min, imag_max, event.button.y, WINDOW_HEIGHT);
+						real_scaled = scale_coord(real_min, real_max, event.button.x, WINDOW_WIDTH);
+						imag_scaled = scale_coord(imag_min, imag_max, event.button.y, WINDOW_HEIGHT);
 						real_diff = real_max - real_min;
-						real_min = real_scale - (real_diff / (2.0 * zoom_factor));
-						real_max = real_scale + (real_diff / (2.0 * zoom_factor));
-						//real_min /= 2.0;
-						//real_max /= 2.0;
+						real_min = real_scaled - (real_diff / (2.0 * zoom_factor));
+						real_max = real_scaled + (real_diff / (2.0 * zoom_factor));
 						imag_diff = imag_max - imag_min;
-						imag_min = imag_scale - (imag_diff / (2.0 * zoom_factor));
-						imag_max = imag_scale + (imag_diff / (2.0 * zoom_factor));
-						//imag_min /= 2.0;
-						//imag_max /= 2.0;
+						imag_min = imag_scaled - (imag_diff / (2.0 * zoom_factor));
+						imag_max = imag_scaled + (imag_diff / (2.0 * zoom_factor));
 					render_mandelbrot(&app, real_min, real_max, imag_min, imag_max, rand_r, rand_g, rand_b, &pixels);
 					break;
 				default:
 					break;
 			}
 		}
-		//draw_point(&app, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 255, 255, 255); // Draw point at center of screen for reference
 		SDL_RenderPresent(app.renderer);
 		SDL_Delay(app.delay_time);
 	}
