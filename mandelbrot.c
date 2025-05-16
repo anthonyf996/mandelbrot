@@ -76,33 +76,32 @@ unsigned int is_in_mandelbrot_set(double x, double y) {
 	return i;
 }
 
-void render_mandelbrot(struct App *app, double real_min, double real_max, double imag_min, double imag_max, int r, int g, int b, unsigned int pixels[WINDOW_HEIGHT][WINDOW_WIDTH]) {
+void draw_mandelbrot_point(struct App *app, int x, int y, int r, int g, int b, unsigned int iter_count) {
 	const unsigned int rgb_scale = 2;
+	if (iter_count == 0) {
+		draw_point(app, x, y, 0, 0, 0);
+	} else {
+		draw_point(app, x, y, 255 - iter_count * rgb_scale - r, 255 - iter_count * rgb_scale - g, 255 - iter_count * rgb_scale - b);
+	}
+}
+
+void render_mandelbrot(struct App *app, double real_min, double real_max, double imag_min, double imag_max, int r, int g, int b, unsigned int pixels[WINDOW_HEIGHT][WINDOW_WIDTH]) {
 	for (unsigned int x = 0; x < WINDOW_WIDTH; x++) {
 		for (unsigned int y = 0; y < WINDOW_HEIGHT; y++) {
 			double x_scaled = scale_coord(real_min, real_max, x, WINDOW_WIDTH);
 			double y_scaled = scale_coord(imag_min, imag_max, y, WINDOW_HEIGHT);
-			unsigned int result = is_in_mandelbrot_set(x_scaled, y_scaled);
-			pixels[y][x] = result;
-			if (result == 0) {
-				draw_point(app, x, y, 0, 0, 0);
-			} else {
-				draw_point(app, x, y, 255 - result * rgb_scale - r, 255 - result * rgb_scale - g, 255 - result * rgb_scale - b);
-			}
+			unsigned int iter_count = is_in_mandelbrot_set(x_scaled, y_scaled);
+			pixels[y][x] = iter_count;
+			draw_mandelbrot_point(app, x, y, r, g, b, iter_count);
 		}
 	}
 }
 
 void draw_mandelbrot(struct App *app, int r, int g, int b, unsigned int pixels[WINDOW_HEIGHT][WINDOW_WIDTH]) {
-	int scale = 2;
 	for (unsigned int x = 0; x < WINDOW_WIDTH; x++) {
 		for (unsigned int y = 0; y < WINDOW_HEIGHT; y++) {
-			unsigned int result = pixels[y][x];
-			if (result == 0) {
-				draw_point(app, x, y, 0, 0, 0);
-			} else {
-				draw_point(app, x, y, 255 - result * scale - r, 255 - result * scale - g, 255 - result * scale - b);
-			}
+			unsigned int iter_count = pixels[y][x];
+			draw_mandelbrot_point(app, x, y, r, g, b, iter_count);
 		}
 	}
 }
