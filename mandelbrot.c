@@ -80,14 +80,10 @@ void render_mandelbrot(struct App *app, double real_min, double real_max, double
 	int scale = 2;
 	for (unsigned int x = 0; x < WINDOW_WIDTH; x++) {
 		for (unsigned int y = 0; y < WINDOW_HEIGHT; y++) {
-			//double x_scaled = real_min + (real_max - real_min) * x / (float)WINDOW_WIDTH;
-			//double y_scaled = imag_min + (imag_max - imag_min) * y / (float)WINDOW_HEIGHT;
 			double x_scaled = scale_coord(real_min, real_max, x, WINDOW_WIDTH);
 			double y_scaled = scale_coord(imag_min, imag_max, y, WINDOW_HEIGHT);
 			unsigned int result = is_in_mandelbrot_set(x_scaled, y_scaled);
 			pixels[y][x] = result;
-			//draw_point(app, x, y, result * scale + rand_r % 256, result * scale + rand_g % 256, result * scale + rand_b % 256);
-			//draw_point(app, x, y, result * rand_r % 256, result * rand_g % 256, result * rand_b % 256);
 			if (result == 0) {
 				draw_point(app, x, y, 0, 0, 0);
 			} else {
