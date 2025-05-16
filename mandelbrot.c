@@ -77,7 +77,7 @@ unsigned int is_in_mandelbrot_set(double x, double y) {
 }
 
 void render_mandelbrot(struct App *app, double real_min, double real_max, double imag_min, double imag_max, int r, int g, int b, unsigned int pixels[WINDOW_HEIGHT][WINDOW_WIDTH]) {
-	int scale = 2;
+	const unsigned int rgb_scale = 2;
 	for (unsigned int x = 0; x < WINDOW_WIDTH; x++) {
 		for (unsigned int y = 0; y < WINDOW_HEIGHT; y++) {
 			double x_scaled = scale_coord(real_min, real_max, x, WINDOW_WIDTH);
@@ -87,7 +87,7 @@ void render_mandelbrot(struct App *app, double real_min, double real_max, double
 			if (result == 0) {
 				draw_point(app, x, y, 0, 0, 0);
 			} else {
-				draw_point(app, x, y, 255 - result * scale - r, 255 - result * scale - g, 255 - result * scale - b);
+				draw_point(app, x, y, 255 - result * rgb_scale - r, 255 - result * rgb_scale - g, 255 - result * rgb_scale - b);
 			}
 		}
 	}
