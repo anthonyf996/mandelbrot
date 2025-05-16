@@ -65,15 +65,15 @@ unsigned int is_in_mandelbrot_set(double x, double y) {
 	const unsigned int MAX_ITERATIONS = 700;
 	double complex c = x + y * I;
 	double complex z = 0;
-	unsigned int i = 0;
-	while (abs(z) <= 2 && i < MAX_ITERATIONS) {
+	unsigned int iter_count = 0;
+	while (abs(z) <= 2 && iter_count < MAX_ITERATIONS) {
 		z = z * z + c;
-		i++;
+		iter_count++;
 	}
-	if (i == MAX_ITERATIONS) {
+	if (iter_count == MAX_ITERATIONS) {
 		return 0;
 	}
-	return i;
+	return iter_count;
 }
 
 void draw_mandelbrot_point(struct App *app, int x, int y, int r, int g, int b, unsigned int iter_count) {
