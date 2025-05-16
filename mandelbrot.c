@@ -22,6 +22,18 @@ struct App {
 	double delay_time;
 } app;
 
+struct Mandelbrot {
+	unsigned int pixels[WINDOW_HEIGHT][WINDOW_WIDTH];
+	double real_min;
+	double real_max;
+	double imag_min;
+	double imag_max;
+	int zoom_factor;
+	int r;
+	int g;
+	int b;
+};
+
 bool app_init(struct App *app) {
 	if (SDL_Init(SDL_INIT_VIDEO)) {
 		fprintf(stderr, "Error initializing SDL! %s\n", SDL_GetError());
@@ -85,23 +97,25 @@ void draw_mandelbrot_point(struct App *app, int x, int y, int r, int g, int b, u
 	}
 }
 
-void render_mandelbrot(struct App *app, double real_min, double real_max, double imag_min, double imag_max, int r, int g, int b, unsigned int pixels[WINDOW_HEIGHT][WINDOW_WIDTH]) {
+//void render_mandelbrot(struct App *app, double real_min, double real_max, double imag_min, double imag_max, int r, int g, int b, unsigned int pixels[WINDOW_HEIGHT][WINDOW_WIDTH]) {
+void render_mandelbrot(struct App *app, struct Mandelbrot *mand) {
 	for (unsigned int x = 0; x < WINDOW_WIDTH; x++) {
 		for (unsigned int y = 0; y < WINDOW_HEIGHT; y++) {
-			double x_scaled = scale_coord(real_min, real_max, x, WINDOW_WIDTH);
-			double y_scaled = scale_coord(imag_min, imag_max, y, WINDOW_HEIGHT);
+			double x_scaled = scale_coord(mand->real_min, mand->real_max, x, WINDOW_WIDTH);
+			double y_scaled = scale_coord(mand->imag_min, mand->imag_max, y, WINDOW_HEIGHT);
 			unsigned int iter_count = is_in_mandelbrot_set(x_scaled, y_scaled);
-			pixels[y][x] = iter_count;
-			draw_mandelbrot_point(app, x, y, r, g, b, iter_count);
+			mand->pixels[y][x] = iter_count;
+			draw_mandelbrot_point(app, x, y, mand->r, mand->g, mand->b, iter_count);
 		}
 	}
 }
 
-void draw_mandelbrot(struct App *app, int r, int g, int b, unsigned int pixels[WINDOW_HEIGHT][WINDOW_WIDTH]) {
+//void draw_mandelbrot(struct App *app, int r, int g, int b, unsigned int pixels[WINDOW_HEIGHT][WINDOW_WIDTH]) {
+void draw_mandelbrot(struct App *app, struct Mandelbrot *mand) {
 	for (unsigned int x = 0; x < WINDOW_WIDTH; x++) {
 		for (unsigned int y = 0; y < WINDOW_HEIGHT; y++) {
-			unsigned int iter_count = pixels[y][x];
-			draw_mandelbrot_point(app, x, y, r, g, b, iter_count);
+			unsigned int iter_count = mand->pixels[y][x];
+			draw_mandelbrot_point(app, x, y, mand->r, mand->g, mand->b, iter_count);
 		}
 	}
 }
@@ -113,17 +127,28 @@ int main(void) {
 		.renderer = NULL,
 		.delay_time = DELAY_TIME
 	};
+	struct Mandelbrot mand = {
+		.pixels = {0},
+		.real_min = REAL_MIN,
+		.real_max = REAL_MAX,
+		.imag_min = IMAG_MIN,
+		.imag_max = IMAG_MAX,
+		.zoom_factor = 2,
+		.r = rand() % 256,
+		.g = rand() % 256,
+		.b = rand() % 256
+	};
+	/*
 	unsigned int pixels[WINDOW_HEIGHT][WINDOW_WIDTH] = {0};
 	double real_min = REAL_MIN;
 	double real_max = REAL_MAX;
-	//double real_diff = REAL_MAX - REAL_MIN;
 	double imag_min = IMAG_MIN;
 	double imag_max = IMAG_MAX;
-	//double imag_diff = IMAG_MAX - IMAG_MIN;
 	int zoom_factor = 2;
 	int rand_r = rand() % 256;
 	int rand_g = rand() % 256;
 	int rand_b = rand() % 256;
+	*/
 
 	if (app_init(&app)) {
 		fprintf(stderr, "Error initializing app! %s\n", SDL_GetError());
@@ -133,7 +158,8 @@ int main(void) {
 
 
 	SDL_RenderClear(app.renderer);
-	render_mandelbrot(&app, REAL_MIN, REAL_MAX, IMAG_MIN, IMAG_MAX, rand_r, rand_g, rand_b, pixels);
+	//render_mandelbrot(&app, REAL_MIN, REAL_MAX, IMAG_MIN, IMAG_MAX, rand_r, rand_g, rand_b, pixels);
+	render_mandelbrot(&app, &mand);
 	while (true) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -149,17 +175,19 @@ int main(void) {
 							return 0;
 							break;
 						case SDL_SCANCODE_SPACE:
-							render_mandelbrot(&app, REAL_MIN, REAL_MAX, IMAG_MIN, IMAG_MAX, rand_r, rand_g, rand_b, pixels);
-							real_min = REAL_MIN;
-							real_max = REAL_MAX;
-							imag_min = IMAG_MIN;
-							imag_max = IMAG_MAX;
+							//render_mandelbrot(&app, REAL_MIN, REAL_MAX, IMAG_MIN, IMAG_MAX, rand_r, rand_g, rand_b, pixels);
+							mand.real_min = REAL_MIN;
+							mand.real_max = REAL_MAX;
+							mand.imag_min = IMAG_MIN;
+							mand.imag_max = IMAG_MAX;
+							render_mandelbrot(&app, &mand);
 							break;
 						case SDL_SCANCODE_C:
-							rand_r = rand() % 256;
-							rand_g = rand() % 256;
-							rand_b = rand() % 256;
-							draw_mandelbrot(&app, rand_r, rand_g, rand_b, pixels);
+							mand.r = rand() % 256;
+							mand.g = rand() % 256;
+							mand.b = rand() % 256;
+							//draw_mandelbrot(&app, rand_r, rand_g, rand_b, pixels);
+							draw_mandelbrot(&app, &mand);
 							break;
 						default:
 							break;
@@ -167,15 +195,16 @@ int main(void) {
 					break;
 				case SDL_MOUSEBUTTONDOWN:
 					{
-						double real_scaled = scale_coord(real_min, real_max, event.button.x, WINDOW_WIDTH);
-						double imag_scaled = scale_coord(imag_min, imag_max, event.button.y, WINDOW_HEIGHT);
-						double real_diff = real_max - real_min;
-						real_min = real_scaled - (real_diff / (2.0 * zoom_factor));
-						real_max = real_scaled + (real_diff / (2.0 * zoom_factor));
-						double imag_diff = imag_max - imag_min;
-						imag_min = imag_scaled - (imag_diff / (2.0 * zoom_factor));
-						imag_max = imag_scaled + (imag_diff / (2.0 * zoom_factor));
-						render_mandelbrot(&app, real_min, real_max, imag_min, imag_max, rand_r, rand_g, rand_b, pixels);
+						double real_scaled = scale_coord(mand.real_min, mand.real_max, event.button.x, WINDOW_WIDTH);
+						double imag_scaled = scale_coord(mand.imag_min, mand.imag_max, event.button.y, WINDOW_HEIGHT);
+						double real_diff = mand.real_max - mand.real_min;
+						mand.real_min = real_scaled - (real_diff / (2.0 * mand.zoom_factor));
+						mand.real_max = real_scaled + (real_diff / (2.0 * mand.zoom_factor));
+						double imag_diff = mand.imag_max - mand.imag_min;
+						mand.imag_min = imag_scaled - (imag_diff / (2.0 * mand.zoom_factor));
+						mand.imag_max = imag_scaled + (imag_diff / (2.0 * mand.zoom_factor));
+						//render_mandelbrot(&app, real_min, real_max, imag_min, imag_max, rand_r, rand_g, rand_b, pixels);
+						render_mandelbrot(&app, &mand);
 					}
 					break;
 				default:
