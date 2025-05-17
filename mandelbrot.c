@@ -8,10 +8,10 @@
 #define WINDOW_TITLE "Mandelbrot"
 #define WINDOW_WIDTH 1000
 #define WINDOW_HEIGHT 800
-#define REAL_MIN -2
-#define REAL_MAX 2
-#define IMAG_MIN -2
-#define IMAG_MAX 2
+#define DEFAULT_REAL_MIN -2
+#define DEFAULT_REAL_MAX 2
+#define DEFAULT_IMAG_MIN -2
+#define DEFAULT_IMAG_MAX 2
 #define DEFAULT_R 0
 #define DEFAULT_G 0
 #define DEFAULT_B 0
@@ -127,10 +127,10 @@ int main(void) {
 	};
 	struct Mandelbrot mand = {
 		.iter_count_at_pixel = {0},
-		.real_min = REAL_MIN,
-		.real_max = REAL_MAX,
-		.imag_min = IMAG_MIN,
-		.imag_max = IMAG_MAX,
+		.real_min = DEFAULT_REAL_MIN,
+		.real_max = DEFAULT_REAL_MAX,
+		.imag_min = DEFAULT_IMAG_MIN,
+		.imag_max = DEFAULT_IMAG_MAX,
 		.zoom_factor = 2,
 		.r = rand() % 256,
 		.g = rand() % 256,
@@ -161,10 +161,10 @@ int main(void) {
 							return 0;
 							break;
 						case SDL_SCANCODE_SPACE:
-							mand.real_min = REAL_MIN;
-							mand.real_max = REAL_MAX;
-							mand.imag_min = IMAG_MIN;
-							mand.imag_max = IMAG_MAX;
+							mand.real_min = DEFAULT_REAL_MIN;
+							mand.real_max = DEFAULT_REAL_MAX;
+							mand.imag_min = DEFAULT_IMAG_MIN;
+							mand.imag_max = DEFAULT_IMAG_MAX;
 							render_mandelbrot(&app, &mand);
 							break;
 						case SDL_SCANCODE_C:
