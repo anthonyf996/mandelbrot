@@ -12,9 +12,6 @@
 #define DEFAULT_REAL_MAX 2
 #define DEFAULT_IMAG_MIN -2
 #define DEFAULT_IMAG_MAX 2
-#define DEFAULT_R 0
-#define DEFAULT_G 0
-#define DEFAULT_B 0
 
 struct App {
 	SDL_Window *window;
@@ -64,9 +61,11 @@ void app_destroy(struct App *app) {
 }
 
 void draw_point(struct App *app, int x, int y, Uint8 r, Uint8 g, Uint8 b) {
-		SDL_SetRenderDrawColor(app->renderer, r, g, b, 255);
-		SDL_RenderDrawPoint(app->renderer, x, y);
-		SDL_SetRenderDrawColor(app->renderer, DEFAULT_R, DEFAULT_G, DEFAULT_B, 255);
+	Uint8 prev_r = 0, prev_g = 0, prev_b = 0, prev_a = 255;
+	SDL_GetRenderDrawColor(app->renderer, &prev_r, &prev_g, &prev_b, &prev_a);
+	SDL_SetRenderDrawColor(app->renderer, r, g, b, 255);
+	SDL_RenderDrawPoint(app->renderer, x, y);
+	SDL_SetRenderDrawColor(app->renderer, prev_r, prev_g, prev_b, prev_a);
 }
 
 double scale_coord(double target_scale_min, double target_scale_max, double coord_to_scale, double coord_scale_max) {
