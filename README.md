@@ -7,9 +7,9 @@ A C program that uses the mandelbrot set to display fractal art.
 
 Requirements:
 
->SDL2
-A C compiler
-make
+>SDL2  
+A C compiler  
+make  
 
 <br>
 
@@ -21,11 +21,15 @@ For instance, on Debian / Ubuntu based distributions, run:
 
 >```$ apt-get install -y libsdl2-dev```
 
+<br>
+
 Also make sure that the "make" program and a C compiler is installed.
 
 On Debian / Ubuntu based distributions:
 
 >```$ apt-get install -y gcc make```
+
+<br>
 
 If you are not using gcc, update the Makefile and replace "gcc" on the line "CC := gcc" with your compiler.
 
@@ -45,7 +49,7 @@ Run the program as follows:
 
 ## Controls
 
->LEFT CLICK - Zoom in at the clicked position.
-SPACEBAR   - Reset zoom.
-c          - Change color.
-ESC        - Quit the program.
+>LEFT CLICK - Zoom in at the clicked position.  
+SPACEBAR   - Reset zoom.  
+c          - Change color.  
+ESC        - Quit the program.  
