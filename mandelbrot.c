@@ -88,11 +88,11 @@ unsigned int is_in_mandelbrot_set(double x, double y) {
 }
 
 void draw_mandelbrot_point(struct App *app, int x, int y, int r, int g, int b, unsigned int iter_count) {
-	const unsigned int rgb_scale = 2;
+	const unsigned int rgb_scale = 1;
 	if (iter_count == 0) {
 		draw_point(app, x, y, 0, 0, 0);
 	} else {
-		draw_point(app, x, y, 255 - iter_count * rgb_scale - r, 255 - iter_count * rgb_scale - g, 255 - iter_count * rgb_scale - b);
+		draw_point(app, x, y, (255 - (iter_count * rgb_scale - r)) % 256, (255 - (iter_count * rgb_scale - g)) % 256, (255 - (iter_count * rgb_scale - b)) % 256);
 	}
 }
 
