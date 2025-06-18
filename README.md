@@ -3,6 +3,11 @@ A C program that uses the mandelbrot set to display fractal art.
 
 <br>
 
+![screenshot](screenshots/mandelbrot_screenshot2.png)
+![screenshot](screenshots/mandelbrot_screenshot.png)
+
+<br>
+
 ## Build the Program
 
 Requirements:
