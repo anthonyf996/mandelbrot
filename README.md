@@ -8,6 +8,10 @@ A C program that uses the mandelbrot set to display fractal art.
 
 <br>
 
+Demo: https://youtu.be/uLc80aHu994
+
+<br>
+
 ## Build the Program
 
 Requirements:
