@@ -5,9 +5,9 @@ A C program that uses the mandelbrot set to display fractal art.
 
 Requirements:
 
->```SDL2```
->```A C compiler```
->```make```
+>SDL2
+>A C compiler
+>make
 
 SDL2 is required to run the application.
 
@@ -38,7 +38,7 @@ Run the program as follows:
 
 ## Controls
 
->```LEFT CLICK - Zoom in at the clicked position.```
->```SPACEBAR   - Reset zoom.```
->```c          - Change color.```
->```ESC        - Quit the program.```
+>LEFT CLICK - Zoom in at the clicked position.
+>SPACEBAR   - Reset zoom.
+>c          - Change color.
+>ESC        - Quit the program.
